@@ -39,7 +39,9 @@ public class InitServlet extends HttpServlet {
             this.showSafe(req, resp);
         }else if ("request".equals(key)){
             this.requestAv(req, resp);
-        }else {
+        }else if ("remove".equals(key)){
+            this.remove(req, resp);
+        } else {
             this.show(req, resp);
         }
     }
@@ -62,16 +64,29 @@ public class InitServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/success.jsp").forward(req, resp);
     }
 
+    // 安全性算法检查
     private void showSafe(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Process> safeSerial = banker.getSafeSerial(processes, totalResources);
         System.out.println("-------------------------");
         List<String> strings = new ArrayList<>();
+        // 存放安全序列
+        StringBuilder stringBuilder = new StringBuilder();
         // 将进程转换为字符串
         for (Process p : safeSerial){
             getStrSafe(strings, p);
         }
-        // 存到session中
+
+        for (int i = 0; i < safeSerial.size(); i++) {
+            if (i < safeSerial.size() - 1){
+                stringBuilder.append(safeSerial.get(i).getName());
+                stringBuilder.append("  -->  ");
+            }else {
+                stringBuilder.append(safeSerial.get(i).getName());
+            }
+        }
+        //
         req.setAttribute("safeSerial", strings);
+        req.setAttribute("string", stringBuilder.toString());
         req.getRequestDispatcher("/jsp/showSafe.jsp").forward(req, resp);
     }
 
@@ -88,6 +103,13 @@ public class InitServlet extends HttpServlet {
         }
     }
 
+    // 清除所有的进程，添加新的资源
+    private void remove(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        processes.clear();
+        req.setAttribute("msg", "删除成功，请去添加新的资源！");
+        req.getRequestDispatcher("/jsp/initResources.jsp").forward(req, resp);
+    }
+    // 显示资源分配情况
     private void show(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("total = " + totalResources);
         List<String> resourcesName = banker.getResourcesName(totalResources);
@@ -146,6 +168,7 @@ public class InitServlet extends HttpServlet {
         Integer number = Integer.valueOf( req.getParameter("resourceCount"));
         totalResources.put(name, number);
         System.out.println("资源数：" + totalResources.size());
+        // 将资源数存到session中，以便在创建进程的时候使用
         req.getSession().setAttribute("resourceSize", totalResources.size());
         req.getRequestDispatcher("/jsp/continueOrNot.jsp").forward(req, resp);
     }

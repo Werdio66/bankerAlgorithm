@@ -61,7 +61,7 @@ public class BankerAlgorithm {
         }
     }
 
-    // 返回安全序列
+    // 返回资源名称
     public List<String> getResourcesName(Map<String, Integer> totalResources){
         List<String> list = new ArrayList<>();
         for (Map.Entry<String, Integer> map : totalResources.entrySet()){

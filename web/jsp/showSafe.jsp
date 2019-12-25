@@ -37,7 +37,9 @@
                 </c:forEach>
             </tr>
         </c:forEach>
-
+        <div style="color: red">
+            ${string}
+        </div>
     </table>
 </body>
 </html>
