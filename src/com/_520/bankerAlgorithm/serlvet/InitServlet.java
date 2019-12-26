@@ -2,14 +2,12 @@ package com._520.bankerAlgorithm.serlvet;
 
 import com._520.bankerAlgorithm.entity.BankerAlgorithm;
 import com._520.bankerAlgorithm.entity.Process;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @WebServlet("/init")
@@ -20,7 +18,7 @@ public class InitServlet extends HttpServlet {
     private static Map<String, Integer> totalResources;
     private static BankerAlgorithm banker;
     @Override
-    public void init() throws ServletException {
+    public void init(){
         processes = new HashMap<>();
         totalResources = new HashMap<>();
         banker = BankerAlgorithm.getInstance();
@@ -68,6 +66,12 @@ public class InitServlet extends HttpServlet {
     private void showSafe(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<Process> safeSerial = banker.getSafeSerial(processes, totalResources);
         System.out.println("-------------------------");
+        if (safeSerial == null){
+            // 传递运行结果
+            req.setAttribute("msg","不存在安全序列！");
+            req.getRequestDispatcher("/jsp/success.jsp").forward(req, resp);
+            return;
+        }
         List<String> strings = new ArrayList<>();
         // 存放安全序列
         StringBuilder stringBuilder = new StringBuilder();
@@ -75,7 +79,7 @@ public class InitServlet extends HttpServlet {
         for (Process p : safeSerial){
             getStrSafe(strings, p);
         }
-
+        stringBuilder.append("安全序列为：");
         for (int i = 0; i < safeSerial.size(); i++) {
             if (i < safeSerial.size() - 1){
                 stringBuilder.append(safeSerial.get(i).getName());
@@ -106,9 +110,11 @@ public class InitServlet extends HttpServlet {
     // 清除所有的进程，添加新的资源
     private void remove(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         processes.clear();
+        req.getSession().removeAttribute("processNum");
         req.setAttribute("msg", "删除成功，请去添加新的资源！");
         req.getRequestDispatcher("/jsp/initResources.jsp").forward(req, resp);
     }
+
     // 显示资源分配情况
     private void show(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         System.out.println("total = " + totalResources);
@@ -122,11 +128,10 @@ public class InitServlet extends HttpServlet {
 
         System.out.println("数组：" + list);
         // 传进程
-        req.getSession().setAttribute("processes",list);
+        req.setAttribute("processes",list);
         // 传递资源名称
-        req.getSession().setAttribute("resourceName", resourcesName);
-        // 传递进程数
-        req.getSession().setAttribute("processNum", processes.size());
+        req.setAttribute("resourceName", resourcesName);
+
         // 传递可用资源
         req.setAttribute("available", Arrays.toString(getAvailable(processes)));
         req.getRequestDispatcher("/jsp/show.jsp").forward(req, resp);
@@ -140,7 +145,7 @@ public class InitServlet extends HttpServlet {
     }
 
 
-    private void initProcess(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void initProcess(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         // 资源数
         int size = totalResources.size();
         // 接收用户传入的数据
@@ -160,7 +165,9 @@ public class InitServlet extends HttpServlet {
         System.out.println("Max = " + Arrays.toString(max));
         System.out.println("Allocation = " + Arrays.toString(allocation));
         processes.put(processName, new Process(processName, max, allocation));
-        resp.sendRedirect("/jsp/continueOrNotProcess.jsp");
+        // 传递进程数
+        req.getSession().setAttribute("processNum", processes.size());
+        req.getRequestDispatcher("/jsp/continueOrNotProcess.jsp").forward(req, resp);
     }
 
     private void initReources(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

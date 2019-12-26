@@ -5,8 +5,10 @@
 </head>
 <body>
     <h3>是否继续输入资源</h3>
-    资源数：${resourceSize}<br>
-    <a href="jsp/initResources.jsp">继续添加资源</a><br>
-    <a href="jsp/initProcess.jsp?resourceSize=${resourceSize}">去添加进程</a><br>
+    <div style="color: blue">
+        资源数：${resourceSize}<br>
+    </div>
+    <a href="jsp/initResources.jsp">1.继续添加资源</a><br>
+    <a href="jsp/initProcess.jsp?resourceSize=${resourceSize}">2.去添加进程</a><br>
 </body>
 </html>

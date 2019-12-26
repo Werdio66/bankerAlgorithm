@@ -7,6 +7,9 @@
 </head>
 <body>
 <h3>初始化进程</h3>
+<div style="color: blue">
+    进程数：${processNum}
+</div>
 <form action="/init?cmd=process" method="post">
     请输入进程名：<input type="text" name="processName"/><br>
     请输入最大资源数量：

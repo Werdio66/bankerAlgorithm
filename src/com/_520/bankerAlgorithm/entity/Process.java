@@ -1,7 +1,5 @@
 package com._520.bankerAlgorithm.entity;
 
-import java.util.Arrays;
-
 public class Process {
     private String name;                // 进程名称
     private int[] max;                  // 最大需求
@@ -22,16 +20,8 @@ public class Process {
         }
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public int[] getMax() {
         return max;
-    }
-
-    public void setMax(int[] max) {
-        this.max = max;
     }
 
     public int[] getWorkAndAllocation() {
@@ -69,7 +59,6 @@ public class Process {
     public void setWork(int[] work) {
         this.work = work;
     }
-
 
     public void setWorkAndAllocation(int[] workAndAllocation) {
         this.workAndAllocation = workAndAllocation;
